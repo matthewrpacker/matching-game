@@ -1,3 +1,8 @@
+// Start game with a shuffled deck
+$(function() {
+  shuffle($("table"));
+});
+
 $("#refresh").click(function() {
   shuffle($("table"));
 })
