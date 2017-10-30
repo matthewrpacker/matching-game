@@ -3,6 +3,8 @@
   color: #2E3D49;
 }
 
+#refresh, td { cursor: pointer; }
+i { user-select: none; }
 .material-icons { color: #2E3D49; }
 .material-icons.md-60 { font-size: 60px; }
 .material-icons.white { color: #FFFFFF; }
