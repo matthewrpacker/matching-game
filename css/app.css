@@ -1,0 +1,20 @@
+body {
+  text-align: center;
+}
+
+table {
+  background: linear-gradient(270deg, #673ab7, #009688);
+  border-radius: 10px;
+  border-spacing: 30px;
+  margin: 0 auto;
+}
+
+tr {
+  height: 125px;
+}
+
+td {
+  width: 125px;
+  border-radius: 10px;
+  background: #2e3d49;
+}
