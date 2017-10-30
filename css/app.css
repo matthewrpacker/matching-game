@@ -18,3 +18,23 @@ td {
   border-radius: 10px;
   background: #2e3d49;
 }
+
+@media screen and (max-width: 686px) {
+  tr {
+    height: 90px;
+  }
+
+  td {
+    width: 90px;
+  }
+}
+
+@media screen and (max-width: 546px) {
+  tr {
+    height: 50px;
+  }
+
+  td {
+    width: 50px;
+  }
+}
