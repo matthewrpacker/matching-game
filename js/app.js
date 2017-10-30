@@ -9,28 +9,30 @@ $("#refresh").click(function() {
 
 // Inspired by: https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
 let shuffle = (table) => {
-  let tds = table.find("td").children("i");
-  for (let i = tds.length - 1; i > 0; i--) {
-    let j = randomWithin(i);
-    let x = tds[i];
-    tds[i] = tds[j];
-    tds[j] = x;
+  let icons = table.find("td").children("i");
+  for (let i = icons.length - 1; i > 0; i--) {
+    let j = generateRandomNumberWithin(i);
+    let x = icons[i];
+    icons[i] = icons[j];
+    icons[j] = x;
   }
-  createTable(tds);
-}
+  createTable(icons);
+};
 
-let randomWithin = (number) => {
+let generateRandomNumberWithin = (number) => {
   return Math.floor(Math.random() * (number + 1));
-}
+};
 
-let createTable = (tds) => {
+let createTable = (icons) => {
+  $('table').find('i').removeClass('white');
   $('table').find('tr, td, i').remove();
   addSquaresY(4);
   addSquaresX(4);
-  for(let i=0; i < tds.length; i++){
-    $('table').find('td')[i].append(tds[i]);
+  for(let i=0; i < icons.length; i++){
+    $('table').find('td')[i].append(icons[i]);
   }
-}
+  addShowCardListener();
+};
 
 let addSquaresY = (height) => {
   for(let i=0; i < height; i++){
@@ -43,4 +45,10 @@ let addSquaresX = (width) => {
     $('table').find('tr').append('<td></td>');
     width--;
   }
+};
+
+let addShowCardListener = () => {
+  $('table').find('td').click(function(){
+     $(this).find('i').addClass('white');
+  });
 };

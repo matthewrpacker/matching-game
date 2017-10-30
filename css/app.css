@@ -23,6 +23,10 @@ i {
   color: #FFFFFF;
 }
 
+.material-icons.navy {
+  color: #2E3D49;
+}
+
 #refresh, td {
   cursor: pointer;
 }
