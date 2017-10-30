@@ -1,13 +1,18 @@
 * {
   font-family: 'Russo One', sans-serif;
+  color: #2E3D49;
 }
+
+.material-icons { color: #2E3D49; }
+.material-icons.md-60 { font-size: 60px; }
+.material-icons.white { color: #FFFFFF; }
 
 body {
   text-align: center;
 }
 
 table {
-  background: linear-gradient(270deg, #673ab7, #009688);
+  background: linear-gradient(270deg, #673AB7, #009688);
   border-radius: 10px;
   border-spacing: 30px;
   margin: 0 auto;
@@ -20,7 +25,7 @@ tr {
 td {
   width: 125px;
   border-radius: 10px;
-  background: #2e3d49;
+  background: #2E3D49;
 }
 
 @media screen and (max-width: 686px) {
