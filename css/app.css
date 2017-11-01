@@ -23,10 +23,6 @@ i {
   color: #FFFFFF;
 }
 
-.material-icons.navy {
-  color: #2E3D49;
-}
-
 #refresh, td {
   cursor: pointer;
 }
@@ -46,6 +42,18 @@ td {
   width: 125px;
   border-radius: 10px;
   background: #2E3D49;
+}
+
+footer {
+  margin-top: 20px;
+}
+
+.error {
+  background-color:#EFB4AA;
+}
+
+.success {
+  background-color:#ABF2BC;
 }
 
 @media screen and (max-width: 686px) {
