@@ -37,7 +37,7 @@ let resetStars = () => {
 
 let setStars = () => {
   for (var i = 0; i < 3; i++) {
-    $('h1').after(createStar());
+    $('p').after(createStar());
   }
 };
 
@@ -55,6 +55,7 @@ let createTable = (icons) => {
 
 let clearTable = () => {
   $('table').find('i').removeClass('white');
+  $('table').find('i').removeClass('green');
   $('table').find('tr, td, i').remove();
 };
 
@@ -87,14 +88,14 @@ let addShowCardListener = () => {
 var lastClicked = null;
 function shouldContinue() {
   if(this != lastClicked) {
-    checkForFlashMessage.call(this);
+    checkForFlash.call(this);
     lastClicked = this;
   } else if (!cardShowing.call(this)) {
     continueGame.call(this);
   }
 }
 
-function checkForFlashMessage() {
+function checkForFlash() {
   if(!$('footer').length) { continueGame.call(this); }
 }
 
@@ -108,6 +109,14 @@ function continueGame() {
   checkGuess(firstCard(), secondCard());
 }
 
+let firstCard = () => {
+  return clickedCards[clickedCards.length-2]
+};
+
+let secondCard = () => {
+  return clickedCards[clickedCards.length-1]
+};
+
 function showCard() {
   $(this).find('i').addClass('white');
 }
@@ -120,43 +129,58 @@ let checkGuess = (fn1, fn2) => {
   if (clickedCards.length % 2 != 0) { return }
   let firstCard = $(`#${fn1}`).text()
   let secondCard = $(`#${fn2}`).text()
-  secondCard == firstCard ? flashSuccess() : flashError(fn1, fn2)
+  if(secondCard == firstCard) {
+    setupSuccess(fn1, fn2);
+  } else {
+    setupError(fn1, fn2);
+  }
 };
 
-let firstCard = () => {
-  return clickedCards[clickedCards.length-2]
-};
+let setupSuccess = (fn1, fn2) => {
+  flashSuccess(fn1, fn2)
+  changeCardColor(fn1, 'green')
+  changeCardColor(fn2, 'green')
+}
 
-let secondCard = () => {
-  return clickedCards[clickedCards.length-1]
-};
+let setupError = (fn1, fn2) => {
+  flashError(fn1, fn2)
+  changeCardColor(fn1, 'red')
+  changeCardColor(fn2, 'red')
+}
 
-let flashSuccess = () => {
-  addMessage("success", "Correct!")
-  removeFlashMessage();
+let changeCardColor = (fn, color) => {
+  $(`#${fn}`).parent('td').addClass(color);
+}
+
+let flashSuccess = (fn1, fn2) => {
+  removeFlash();
+  animateCard(fn1, 'bounce')
+  animateCard(fn2, 'bounce')
 };
 
 let wrong = 0
 let flashError = (fn1, fn2) => {
-  addMessage("error", "Try again!");
-  removeFlashMessage(fn1, fn2);
+  removeFlash(fn1, fn2);
+  animateCard(fn1, 'shake')
+  animateCard(fn2, 'shake')
   wrong += 1
   removeStar();
 };
 
-let addMessage = (type, message) => {
-  $('body').append(`<footer class=${type}>${message}</footer>`);
-};
-
-let removeFlashMessage = (fn1 = null, fn2 = null) => {
+let removeFlash = (fn1 = null, fn2 = null) => {
   setTimeout(function() {
     if (fn1 != null) {
+      $(`#${fn1}`).parent('td').removeClass('red');
+      $(`#${fn2}`).parent('td').removeClass('red');
       $(`#${fn1}`).removeClass('white');
       $(`#${fn2}`).removeClass('white');
     }
-    $("footer").remove();
   }, 1000);
 };
+
+function animateCard(fn, type) {
+  $(`#${fn}`).effect(type, {times:3}, 500)
+}
 
 let removeStar = () => {
   switch(wrong) {

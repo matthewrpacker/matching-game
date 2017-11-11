@@ -3,6 +3,14 @@
   color: #2E3D49;
 }
 
+.red {
+  background: #E2594B;
+}
+
+.green {
+  background: #64D2BC;
+}
+
 body {
   text-align: center;
 }
