@@ -3,16 +3,24 @@
   color: #2E3D49;
 }
 
+body {
+  text-align: center;
+}
+
+button {
+  background-color: #4286f4;
+  color: white;
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
 .red {
   background: #E2594B;
 }
 
 .green {
   background: #64D2BC;
-}
-
-body {
-  text-align: center;
 }
 
 i {
@@ -25,6 +33,10 @@ i {
 
 .material-icons.md-60 {
   font-size: 60px;
+}
+
+.material-icons.md-180 {
+  font-size: 180px;
 }
 
 .material-icons.white {
@@ -52,16 +64,12 @@ td {
   background: #2E3D49;
 }
 
+#check-mark {
+  color: #64D2BC;
+}
+
 footer {
   margin-top: 20px;
-}
-
-.error {
-  background-color:#EFB4AA;
-}
-
-.success {
-  background-color:#ABF2BC;
 }
 
 @media screen and (max-width: 686px) {

@@ -1,23 +1,16 @@
-// Start game with a shuffled deck
 $(function() {
-  shuffleTable($("table"));
+  shuffleTable($('table'));
+  startTimer();
+  checkRefresh();
 });
 
-let clickedCards = []
-$("#refresh").click(function() {
-  shuffleTable($("table"));
-  clickedCards.length = 0
-  wrong = 0
-  resetStars();
-})
-
-let shuffleTable = (table) => {
-  let icons = table.find("td").children("i");
+const shuffleTable = (table) => {
+  let icons = table.find('td').children('i');
   shuffleIcons(icons);
   createTable(icons);
 };
 
-let shuffleIcons = (icons) => {
+const shuffleIcons = (icons) => {
   for (let i = (icons.length - 1); i > 0; i--) { // Inspired by: https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
     let randomIndex = random(i);
     let oldIcon = icons[i];
@@ -26,26 +19,11 @@ let shuffleIcons = (icons) => {
   }
 };
 
-let random = (number) => {
+const random = (number) => {
   return Math.floor(Math.random() * (number + 1));
 };
 
-let resetStars = () => {
-  $('header').find('i:lt(3)').remove();
-  setStars();
-};
-
-let setStars = () => {
-  for (var i = 0; i < 3; i++) {
-    $('p').after(createStar());
-  }
-};
-
-let createStar = (type = '') => {
-  return `<i class="material-icons">star${type}</i> `
-};
-
-let createTable = (icons) => {
+const createTable = (icons) => {
   clearTable();
   addSquaresY(4);
   addSquaresX(4);
@@ -53,50 +31,98 @@ let createTable = (icons) => {
   addShowCardListener();
 };
 
-let clearTable = () => {
+const clearTable = () => {
   $('table').find('i').removeClass('white');
   $('table').find('i').removeClass('green');
   $('table').find('tr, td, i').remove();
 };
 
-let addSquaresY = (height) => {
+const addSquaresY = (height) => {
   while (height > 0){
     $('table').append('<tr></tr>');
     height--;
   }
 };
 
-let addSquaresX = (width) => {
+const addSquaresX = (width) => {
   while (width > 0) {
     $('table').find('tr').append('<td></td>');
     width--;
   }
 };
 
-let addIcons = (icons) => {
+const addIcons = (icons) => {
   for(let i=0; i < icons.length; i++){
     $('table').find('td')[i].append(icons[i]);
   }
 }
 
-let addShowCardListener = () => {
+const addShowCardListener = () => {
   $('table').find('td').click(function(){
     if (!cardShowing.call(this)) { shouldContinue.call(this); }
   });
 };
 
-var lastClicked = null;
-function shouldContinue() {
-  if(this != lastClicked) {
-    checkForFlash.call(this);
-    lastClicked = this;
-  } else if (!cardShowing.call(this)) {
-    continueGame.call(this);
-  }
+const startTimer = () => {
+  setInterval(function() {
+    setTime();
+  }, 1000);
 }
 
-function checkForFlash() {
-  if(!$('footer').length) { continueGame.call(this); }
+let startTime = new Date().getTime();
+function setTime() { // Inspired by: https://www.w3schools.com/howto/howto_js_countdown.asp
+  let currentTime = new Date().getTime();
+  let passedTime = currentTime - startTime;
+  let seconds = Math.floor((passedTime % (1000 * 60)) / 1000);
+  let minutes = Math.floor((passedTime % (1000 * 60 * 60)) / (1000 * 60));
+  if(seconds <= 9) { seconds = `0${seconds}` }
+  return $('#timer').html(`${minutes}:${seconds}`)
+}
+
+function checkRefresh() {
+  $('#refresh').click(function() {
+    resetTable();
+  })
+}
+
+let clickedCards = []
+let correctCards = 0
+const resetTable = () => {
+  startTime = new Date().getTime();
+  startTimer();
+  shuffleTable($('table'));
+  clickedCards.length = 0
+  correctCards = 0
+  wrong = 0
+  resetStars();
+  updateMoves();
+}
+
+const resetStars = () => {
+  $('header').find('i:lt(3)').remove();
+  setStars();
+};
+
+const setStars = () => {
+  for (let i = 0; i < 3; i++) {
+    $('#moves').after(createStar());
+  }
+};
+
+const createStar = (type = '') => {
+  return `<i class="material-icons">star${type}</i> `
+};
+
+const updateMoves = () => {
+  return $('#moves').html(`${clickedCards.length/2} Moves`)
+}
+
+let lastClicked = null;
+function shouldContinue() {
+  if(this != lastClicked) {
+    lastClicked = this;
+  }
+  continueGame.call(this);
 }
 
 function cardShowing() {
@@ -109,6 +135,15 @@ function continueGame() {
   checkGuess(firstCard(), secondCard());
 }
 
+function showCard() {
+  $(this).find('i').addClass('white');
+}
+
+function addCardToClickedCards() {
+  clickedCards.push($(this).find('i').attr('id'));
+  if((clickedCards.length % 2) === 0) { updateMoves(); }
+}
+
 let firstCard = () => {
   return clickedCards[clickedCards.length-2]
 };
@@ -116,14 +151,6 @@ let firstCard = () => {
 let secondCard = () => {
   return clickedCards[clickedCards.length-1]
 };
-
-function showCard() {
-  $(this).find('i').addClass('white');
-}
-
-function addCardToClickedCards() {
-  clickedCards.push($(this).find('i').attr('id'));
-}
 
 let checkGuess = (fn1, fn2) => {
   if (clickedCards.length % 2 != 0) { return }
@@ -140,31 +167,23 @@ let setupSuccess = (fn1, fn2) => {
   flashSuccess(fn1, fn2)
   changeCardColor(fn1, 'green')
   changeCardColor(fn2, 'green')
-}
-
-let setupError = (fn1, fn2) => {
-  flashError(fn1, fn2)
-  changeCardColor(fn1, 'red')
-  changeCardColor(fn2, 'red')
-}
-
-let changeCardColor = (fn, color) => {
-  $(`#${fn}`).parent('td').addClass(color);
+  correctCards += 1
+  if(correctCards === 8) {
+    addWinTime()
+    $('#timer').remove();
+    $('#refresh').hide();
+    $('table').hide();
+    $('header').append('<h2>You Won!</h2>');
+    $('header').append('<div><i id="check-mark" class="material-icons md-180">check</i></div>')
+    $('header').append('<button id="play">Play Again</button>');
+    checkButtonClick();
+  }
 }
 
 let flashSuccess = (fn1, fn2) => {
   removeFlash();
   animateCard(fn1, 'bounce')
   animateCard(fn2, 'bounce')
-};
-
-let wrong = 0
-let flashError = (fn1, fn2) => {
-  removeFlash(fn1, fn2);
-  animateCard(fn1, 'shake')
-  animateCard(fn2, 'shake')
-  wrong += 1
-  removeStar();
 };
 
 let removeFlash = (fn1 = null, fn2 = null) => {
@@ -178,9 +197,46 @@ let removeFlash = (fn1 = null, fn2 = null) => {
   }, 1000);
 };
 
-function animateCard(fn, type) {
+let animateCard = (fn, type) => {
   $(`#${fn}`).effect(type, {times:3}, 500)
 }
+
+let changeCardColor = (fn, color) => {
+  $(`#${fn}`).parent('td').addClass(color);
+}
+
+function addWinTime() {
+  let time =  $('#timer').html()
+  $('header').find('h1').after(`<p id="win-timer">${time}</p>`);
+}
+
+function checkButtonClick() {
+  $('#play').click(function() {
+    $('#win-timer').remove()
+    $('h2').remove()
+    $('#check-mark').remove()
+    $('#play').remove()
+    $('#refresh').show();
+    $('table').show();
+    $('header').find('h1').after('<p id="timer">0:00</p>');
+    resetTable();
+  })
+}
+
+let setupError = (fn1, fn2) => {
+  flashError(fn1, fn2)
+  changeCardColor(fn1, 'red')
+  changeCardColor(fn2, 'red')
+}
+
+let wrong = 0
+let flashError = (fn1, fn2) => {
+  removeFlash(fn1, fn2);
+  animateCard(fn1, 'shake')
+  animateCard(fn2, 'shake')
+  wrong += 1
+  removeStar();
+};
 
 let removeStar = () => {
   switch(wrong) {
@@ -207,5 +263,5 @@ let removeStar = () => {
 
 let swapStars = (index, type = '_border') => {
   $('header').find('i')[index].remove();
-  $("header i").eq(index).before(createStar(type));
+  $('header i').eq(index).before(createStar(type));
 };
