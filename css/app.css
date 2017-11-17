@@ -116,3 +116,21 @@ button {
     font-size: 45px;
   }
 }
+
+@media screen and (max-width: 340px) {
+  table {
+    border-spacing: 15px;
+  }
+
+  tr {
+    height: 50px;
+  }
+
+  td {
+    width: 50px;
+  }
+
+  .material-icons.md {
+    font-size: 30px;
+  }
+}
