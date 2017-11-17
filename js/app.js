@@ -89,7 +89,11 @@ function addCardToClickedCards() {
 }
 
 const updateMoves = () => {
-  return $('#moves').html(`${clickedCards.length/2} Moves`)
+  return $('.moves:first').html(`${clickedCards.length/2}`)
+}
+
+const addNewMoveClass = () => {
+  return $('.moves:last').addClass('new-move')
 }
 
 const card1 = () => {
@@ -132,7 +136,7 @@ const hideGame = () => {
 
 const showWinView = () => {
   $('header').append('<h2>You Won!</h2>');
-  $('header').append('<div><i id="check-mark" class="material-icons md-180">check</i></div>');
+  $('header').append('<div><i id="check-mark" class="material-icons lg">check</i></div>');
   $('header').append('<button id="play">Play Again</button>');
 }
 
@@ -148,7 +152,9 @@ const resetCard = (ID) => {
 }
 
 const animateCard = (IDs, type) => {
-  IDs.forEach((ID) => { $(`#${ID}`).effect(type, {times:2}, 500); });
+  IDs.forEach((ID) => {
+    $(`#${ID}`).effect(type, {distance:10}, {times:2}, 500);
+  });
 }
 
 const changeCardColor = (IDs, color) => {
@@ -188,6 +194,7 @@ const resetTable = () => {
   wrong = 0
   resetStars();
   updateMoves();
+  addNewMoveClass();
 }
 
 const startTimer = () => {
@@ -211,7 +218,7 @@ const resetStars = () => {
 
 const setStars = () => {
   for (let i = 0; i < 3; i++) {
-    $('#moves').after(createStar());
+    $('.moves:last').after(createStar());
   }
 };
 
