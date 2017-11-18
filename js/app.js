@@ -265,12 +265,6 @@ const removeStar = () => {
     case 16:
       swapStars(1);
       break;
-    case 20:
-      swapStars(0, '_half');
-      break;
-    case 24:
-      swapStars(0);
-      break;
   }
 };
 
