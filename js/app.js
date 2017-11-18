@@ -1,8 +1,19 @@
 $(() => {
   shuffleTable($('table'));
-  startTimer();
   checkRefresh();
 });
+
+let startTime;
+function startGame() {
+  startTime = new Date().getTime();
+  startTimer();
+  $('header').find('p:first').attr('id', 'timer');
+}
+
+function addTemporaryTimer() {
+  $('#timer').remove()
+  $('header').find('h1').after('<p id="temporary-time">0:00</p>');
+}
 
 const shuffleTable = (table) => {
   let icons = table.find('td').children('i');
@@ -58,6 +69,7 @@ const addIcons = (icons) => {
 
 const addShowCardListener = () => {
   $('table').find('td').click(function() {
+    if(clickedCards.length === 0) { startGame(); }
     if (!cardShowing.call(this)) { shouldContinue.call(this); }
   });
 };
@@ -187,9 +199,9 @@ const showGame = () => {
 }
 
 const resetTable = () => {
-  startTime = new Date().getTime();
-  shuffleTable($('table'));
   clickedCards.length = 0
+  shuffleTable($('table'));
+  if($('#temporary-time').length == 0) { addTemporaryTimer(); }
   correctCards = 0
   wrong = 0
   resetStars();
@@ -201,7 +213,6 @@ const startTimer = () => {
   setInterval(() => { setTime(); });
 }
 
-let startTime = new Date().getTime();
 const setTime = () => { // Inspired by: https://www.w3schools.com/howto/howto_js_countdown.asp
   let currentTime = new Date().getTime();
   let passedTime = currentTime - startTime;

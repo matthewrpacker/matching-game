@@ -16,8 +16,7 @@ p {
   padding-right: 5px;
 }
 
-#timer,
-#win-timer {
+p:first-of-type {
   width: 45px;
 }
 
