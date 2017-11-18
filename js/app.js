@@ -55,10 +55,11 @@ const addIcons = (icons) => {
   }
 };
 
+let clickedCards = []
 const addShowCardListener = () => {
   $('table').find('td').click(function() {
-    if(clickedCards.length === 0) { startGame(); }
-    if (!cardShowing.call(this)) { shouldContinue.call(this); }
+    if(clickedCards.length === 0) { startGame(); } // start timer on first card
+    if (!cardShowing.call(this)) { shouldContinue.call(this); } // prevent guessing the same card twice in row
   });
 };
 
@@ -66,7 +67,20 @@ let startTime;
 const startGame = () => {
   startTime = new Date().getTime();
   startTimer();
-  $('header').find('p:first').attr('id', 'timer');
+  $('header').find('p:first').attr('id', 'timer'); // reset timer ID after refresh & win game
+}
+
+const startTimer = () => {
+  setInterval(() => { setTime(); });
+}
+
+const setTime = () => { // Inspired by: https://www.w3schools.com/howto/howto_js_countdown.asp
+  let currentTime = new Date().getTime();
+  let passedTime = currentTime - startTime;
+  let seconds = Math.floor((passedTime % (1000 * 60)) / 1000);
+  let minutes = Math.floor((passedTime % (1000 * 60 * 60)) / (1000 * 60));
+  if(seconds <= 9) { seconds = `0${seconds}` }
+  return $('#timer').html(`${minutes}:${seconds}`)
 }
 
 function cardShowing() {
@@ -75,7 +89,7 @@ function cardShowing() {
 
 let lastClicked = null;
 function shouldContinue() {
-  if(this != lastClicked) { lastClicked = this; }
+  if(this != lastClicked) { lastClicked = this; } // track current card
   continueGame.call(this);
 }
 
@@ -85,26 +99,17 @@ function continueGame() {
   checkGuess(card1(), card2());
 }
 
-const guessIsDone = () => {
-  return ($('.red').length === 0)
-}
-
 function showCard() {
   $(this).find('i').addClass('white');
 }
 
-let clickedCards = []
 function addCardToClickedCards() {
   clickedCards.push($(this).find('i').attr('id'));
-  if((clickedCards.length % 2) === 0) { updateMoves(); }
+  if((clickedCards.length % 2) === 0) { updateMoves(); } // add one move every two cards
 }
 
 const updateMoves = () => {
   return $('.moves:first').html(`${clickedCards.length/2}`)
-}
-
-const addNewMoveClass = () => {
-  return $('.moves:last').addClass('new-move')
 }
 
 const card1 = () => {
@@ -116,7 +121,7 @@ const card2 = () => {
 };
 
 const checkGuess = (card1ID, card2ID) => {
-  if (clickedCards.length % 2 != 0) { return }
+  if (clickedCards.length % 2 != 0) { return } // guess is not complete
   let card1 = $(`#${card1ID}`).text()
   let card2 = $(`#${card2ID}`).text()
   card2 === card1 ? success(card1ID, card2ID) : error(card1ID, card2ID)
@@ -130,6 +135,16 @@ const success = (card1ID, card2ID) => {
   checkForWin();
 }
 
+const animateCard = (IDs, type) => {
+  IDs.forEach((ID) => {
+    $(`#${ID}`).effect(type, {distance:10}, {times:2}, 500);
+  });
+}
+
+const changeCardColor = (IDs, color) => {
+  IDs.forEach((ID) => { $(`#${ID}`).parent('td').addClass(color); });
+}
+
 const checkForWin = () => {
   if(correctCards === 8) {
     addWinTime();
@@ -137,6 +152,11 @@ const checkForWin = () => {
     showWinView();
     shouldPlayAgain();
   }
+}
+
+const addWinTime = () => {
+  let time =  $('#timer').html()
+  $('header').find('h1').after(`<p id="win-timer">${time}</p>`);
 }
 
 const hideGame = () => {
@@ -149,32 +169,6 @@ const showWinView = () => {
   $('header').append('<h2>You Won!</h2>');
   $('header').append('<div><i id="check-mark" class="material-icons lg">check</i></div>');
   $('header').append('<button id="play">Play Again</button>');
-}
-
-const removeFlash = (cardIDs) => {
-  setTimeout(() => {
-    if (cardIDs[0] != null) { cardIDs.forEach((ID) => { resetCard(ID); }) }
-  }, 1000);
-};
-
-const resetCard = (ID) => {
-  $(`#${ID}`).parent('td').removeClass('red');
-  $(`#${ID}`).removeClass('white');
-}
-
-const animateCard = (IDs, type) => {
-  IDs.forEach((ID) => {
-    $(`#${ID}`).effect(type, {distance:10}, {times:2}, 500);
-  });
-}
-
-const changeCardColor = (IDs, color) => {
-  IDs.forEach((ID) => { $(`#${ID}`).parent('td').addClass(color); });
-}
-
-const addWinTime = () => {
-  let time =  $('#timer').html()
-  $('header').find('h1').after(`<p id="win-timer">${time}</p>`);
 }
 
 const shouldPlayAgain = () => {
@@ -197,6 +191,7 @@ const showGame = () => {
   $('header').find('h1').after('<p id="timer">0:00</p>');
 }
 
+let wrong = 0
 const resetTable = () => {
   clickedCards.length = 0
   shuffleTable($('table'));
@@ -211,19 +206,6 @@ const resetTable = () => {
 const addTemporaryTimer = () => {
   $('#timer').remove()
   $('header').find('h1').after('<p id="temporary-time">0:00</p>');
-}
-
-const startTimer = () => {
-  setInterval(() => { setTime(); });
-}
-
-const setTime = () => { // Inspired by: https://www.w3schools.com/howto/howto_js_countdown.asp
-  let currentTime = new Date().getTime();
-  let passedTime = currentTime - startTime;
-  let seconds = Math.floor((passedTime % (1000 * 60)) / 1000);
-  let minutes = Math.floor((passedTime % (1000 * 60 * 60)) / (1000 * 60));
-  if(seconds <= 9) { seconds = `0${seconds}` }
-  return $('#timer').html(`${minutes}:${seconds}`)
 }
 
 const resetStars = () => {
@@ -246,7 +228,6 @@ const error = (card1ID, card2ID) => {
   changeCardColor([card1ID, card2ID], 'red')
 }
 
-let wrong = 0
 const flashError = (card1ID, card2ID) => {
   let cardIDs = [card1ID, card2ID]
   removeFlash(cardIDs);
@@ -254,6 +235,17 @@ const flashError = (card1ID, card2ID) => {
   wrong += 1
   removeStar();
 };
+
+const removeFlash = (cardIDs) => {
+  setTimeout(() => {
+    if (cardIDs[0] != null) { cardIDs.forEach((ID) => { resetCard(ID); }) }
+  }, 1000);
+};
+
+const resetCard = (ID) => {
+  $(`#${ID}`).parent('td').removeClass('red');
+  $(`#${ID}`).removeClass('white');
+}
 
 const removeStar = () => {
   switch(wrong) {
@@ -277,10 +269,18 @@ const swapStars = (index, type = '_border') => {
   $('header i').eq(index).before(createStar(type));
 };
 
+const addNewMoveClass = () => {
+  return $('.moves:last').addClass('new-move')
+}
+
 const checkRefresh = () => {
   $('#refresh').click(() => {
     if(guessIsDone()) {
       resetTable();
     }
   })
+}
+
+const guessIsDone = () => {
+  return ($('.red').length === 0)
 }
