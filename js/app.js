@@ -3,18 +3,6 @@ $(() => {
   checkRefresh();
 });
 
-let startTime;
-function startGame() {
-  startTime = new Date().getTime();
-  startTimer();
-  $('header').find('p:first').attr('id', 'timer');
-}
-
-function addTemporaryTimer() {
-  $('#timer').remove()
-  $('header').find('h1').after('<p id="temporary-time">0:00</p>');
-}
-
 const shuffleTable = (table) => {
   let icons = table.find('td').children('i');
   shuffleIcons(icons);
@@ -44,7 +32,7 @@ const createTable = (icons) => {
 
 const clearTable = () => {
   $('table').find('i').removeClass('white');
-  $('table').find('tr, td, i').remove();
+  $('table').find('tr, td').remove();
 };
 
 const addSquaresY = (height) => {
@@ -74,6 +62,13 @@ const addShowCardListener = () => {
   });
 };
 
+let startTime;
+const startGame = () => {
+  startTime = new Date().getTime();
+  startTimer();
+  $('header').find('p:first').attr('id', 'timer');
+}
+
 function cardShowing() {
   return $(this).find('i').hasClass('white');
 }
@@ -88,6 +83,10 @@ function continueGame() {
   showCard.call(this);
   addCardToClickedCards.call(this);
   checkGuess(card1(), card2());
+}
+
+const guessIsDone = () => {
+  return ($('.red').length === 0)
 }
 
 function showCard() {
@@ -209,6 +208,11 @@ const resetTable = () => {
   addNewMoveClass();
 }
 
+const addTemporaryTimer = () => {
+  $('#timer').remove()
+  $('header').find('h1').after('<p id="temporary-time">0:00</p>');
+}
+
 const startTimer = () => {
   setInterval(() => { setTime(); });
 }
@@ -275,6 +279,8 @@ const swapStars = (index, type = '_border') => {
 
 const checkRefresh = () => {
   $('#refresh').click(() => {
-    resetTable();
+    if(guessIsDone()) {
+      resetTable();
+    }
   })
 }
